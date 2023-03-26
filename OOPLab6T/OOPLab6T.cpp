@@ -9,75 +9,83 @@
 
 // Ваші файли загловки 
 //
-class DataSet {
+class Entity {
+protected:
+    std::string name_;
 public:
-    virtual double norm() const = 0;
-};
-
-class ComplexNumber : public DataSet {
-private:
-    double real_;
-    double imag_;
-public:
-    ComplexNumber(double real, double imag) : real_(real), imag_(imag) {}
-    double norm() const override {
-        return real_ * real_ + imag_ * imag_;
+    Entity(const std::string& name) : name_(name) {}
+    virtual ~Entity() {}
+    virtual void print() const {
+        std::cout << "Name: " << name_ << std::endl;
     }
 };
 
-class Vector : public DataSet {
+class Human : public Entity {
 private:
-    double elements_[10];
+    int age_;
 public:
-    Vector(double e0, double e1, double e2, double e3, double e4,
-        double e5, double e6, double e7, double e8, double e9) {
-        elements_[0] = e0;
-        elements_[1] = e1;
-        elements_[2] = e2;
-        elements_[3] = e3;
-        elements_[4] = e4;
-        elements_[5] = e5;
-        elements_[6] = e6;
-        elements_[7] = e7;
-        elements_[8] = e8;
-        elements_[9] = e9;
-    }
-    double norm() const override {
-        double sum_of_squares = 0.0;
-        for (int i = 0; i < 10; ++i) {
-            sum_of_squares += elements_[i] * elements_[i];
-        }
-        return std::sqrt(sum_of_squares);
+    Human(const std::string& name, int age) : Entity(name), age_(age) {}
+    virtual ~Human() {}
+    virtual void print() const override {
+        Entity::print();
+        std::cout << "Age: " << age_ << std::endl;
     }
 };
 
-class Matrix : public DataSet {
+class Father : public Human {
 private:
-    double elements_[2][2];
+    std::string job_;
 public:
-    Matrix(double e00, double e01, double e10, double e11) {
-        elements_[0][0] = e00;
-        elements_[0][1] = e01;
-        elements_[1][0] = e10;
-        elements_[1][1] = e11;
+    Father(const std::string& name, int age, const std::string& job)
+        : Human(name, age), job_(job) {}
+    virtual ~Father() {}
+    virtual void print() const override {
+        Human::print();
+        std::cout << "Job: " << job_ << std::endl;
     }
-    double norm() const override {
-        double sum_of_squares = 0.0;
-        for (int i = 0; i < 2; ++i) {
-            for (int j = 0; j < 2; ++j) {
-                sum_of_squares += elements_[i][j] * elements_[i][j];
-            }
-        }
-        return std::sqrt(sum_of_squares);
+};
+
+class Mother : public Human {
+private:
+    std::string hobby_;
+public:
+    Mother(const std::string& name, int age, const std::string& hobby)
+        : Human(name, age), hobby_(hobby) {}
+    virtual ~Mother() {}
+    virtual void print() const override {
+        Human::print();
+        std::cout << "Hobby: " << hobby_ << std::endl;
+    }
+};
+
+class Daughter : public Father, public Mother {
+public:
+    Daughter(const std::string& name, int age, const std::string& job,
+        const std::string& hobby)
+        : Father(name, age, job), Mother(name, age, hobby), Entity(name) {}
+    virtual ~Daughter() {}
+    virtual void print() const override {
+        Father::print();
+        Mother::print();
     }
 };
 
 int main() {
-    ComplexNumber c(3.0, 4.0);
-    Vector v(1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0, 10.0);
-    Matrix m(1.0, 2.0, 3.0, 4.0);
-    std::cout << "Norm of c: " << c.norm() << std::endl;
-    std::cout << "Norm of v: " << v.norm() << std::endl;
-    std::cout << "Norm of m: " << m.norm() << std::endl;
+    Entity* entity = new Entity("John Doe");
+    Human* human = new Human("Jane Doe", 30);
+    Father* father = new Father("Jim Doe", 50, "Engineer");
+    Mother* mother = new Mother("Mary Doe", 45, "Reading");
+    Daughter* daughter = new Daughter("Jenny Doe", 10, "Student", "Drawing");
+    entity->print();
+    human->print();
+    father->print();
+    mother->print();
+    daughter->print();
+    delete entity;
+    delete human;
+    delete father;
+    delete mother;
+    delete daughter;
     return 0;
 }
+
